@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 
 from app.database.connection import get_client, setup_indexes
+from app.routes.events import router as events_router
 
 app = FastAPI(title="Event Log API")
+app.include_router(events_router)
 
 
 @app.on_event("startup")
