@@ -66,3 +66,20 @@ class EventFilters(BaseModel):
     end_time: Optional[datetime] = Field(
         default=None, description="Include events at or before this timestamp"
     )
+
+
+class PaginatedEventsResponse(BaseModel):
+    """Cursor-paginated list of audit events."""
+
+    items: list[EventResponse]
+    next_cursor: Optional[str] = Field(
+        default=None, description="Opaque cursor for fetching the next page"
+    )
+
+
+class EventStatsItem(BaseModel):
+    """Aggregated event count grouped by service_name and event_type."""
+
+    service_name: str
+    event_type: str
+    count: int

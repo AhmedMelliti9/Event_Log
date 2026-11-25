@@ -11,6 +11,7 @@ env/
 
 # Environment variables
 .env
+.env.example
 
 # Local planning/spec files (not pushed)
 plan.md
@@ -29,6 +30,10 @@ build/
 
 # pytest
 .pytest_cache/
+
+# React dashboard
+dashboard/node_modules/
+dashboard/dist/
 
 # OS
 .DS_Store
