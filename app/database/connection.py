@@ -39,3 +39,14 @@ def get_collection(collection_name: str = "events"):
     """Return a collection reference from the project database."""
     db = get_database()
     return db[collection_name]
+
+
+def setup_indexes(collection=None) -> None:
+    """Create indexes on the events collection for all supported query patterns."""
+    target = collection if collection is not None else get_collection("events")
+    target.create_index("service_name")
+    target.create_index("event_type")
+    target.create_index("severity")
+    target.create_index("resource_id")
+    target.create_index([("timestamp", -1)])
+    target.create_index([("service_name", 1), ("event_type", 1), ("timestamp", -1)])
