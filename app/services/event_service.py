@@ -1,6 +1,12 @@
 from typing import Optional
 
-from app.models.event import EventCreate, EventFilters, EventResponse
+from app.models.event import (
+    EventCreate,
+    EventFilters,
+    EventResponse,
+    EventStatsItem,
+    PaginatedEventsResponse,
+)
 from app.repositories.event_repository import EventRepository
 
 
@@ -18,10 +24,13 @@ class EventService:
         self,
         filters: Optional[EventFilters] = None,
         limit: int = 50,
-        offset: int = 0,
-    ) -> list[EventResponse]:
-        """List events matching optional filters, sorted by timestamp descending."""
-        return self._repository.query(filters=filters, limit=limit, skip=offset)
+        cursor: Optional[str] = None,
+    ) -> PaginatedEventsResponse:
+        """List events matching optional filters with cursor pagination."""
+        items, next_cursor = self._repository.query(
+            filters=filters, limit=limit, cursor=cursor
+        )
+        return PaginatedEventsResponse(items=items, next_cursor=next_cursor)
 
     def get_event(self, event_id: str) -> Optional[EventResponse]:
         """Retrieve a single event by ID, or None if not found."""
@@ -31,9 +40,14 @@ class EventService:
         self,
         resource_id: str,
         limit: int = 50,
-        offset: int = 0,
-    ) -> list[EventResponse]:
-        """Retrieve events for a specific resource_id, sorted by timestamp descending."""
-        return self._repository.get_by_resource_id(
-            resource_id=resource_id, limit=limit, skip=offset
+        cursor: Optional[str] = None,
+    ) -> PaginatedEventsResponse:
+        """Retrieve cursor-paginated events for a specific resource_id."""
+        items, next_cursor = self._repository.get_by_resource_id(
+            resource_id=resource_id, limit=limit, cursor=cursor
         )
+        return PaginatedEventsResponse(items=items, next_cursor=next_cursor)
+
+    def get_stats(self) -> list[EventStatsItem]:
+        """Return event counts grouped by service_name and event_type."""
+        return self._repository.get_stats()
